@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { primaryFont } from "/app/fonts";
+import "/styles/globals.css";
 
 interface IProps {
   children: ReactNode;
@@ -13,7 +14,7 @@ export default function Layout({ children }: IProps) {
           Interactive Card Details Form - Frontend Mentor - Tuan Nguyen
         </title>
       </head>
-      <body className={primaryFont + " text-lg"}>
+      <body className={primaryFont.className + " text-lg"}>
         <main>{children}</main>
       </body>
     </html>
