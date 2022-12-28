@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import Button from "/app/button";
 import CardFront from "/app/card-front";
 import Container from "/app/container";
 import ImageSwitch from "/app/image-switch";
@@ -11,6 +13,7 @@ import TextField from "/app/text-field";
 import bgCardBack from "/public/bg-card-back.png";
 import bgMainDesktop from "/public/bg-main-desktop.png";
 import bgMainMobile from "/public/bg-main-mobile.png";
+import iconComplete from "/public/icon-complete.svg";
 
 const MAX_CARD_NAME = 21;
 const MAX_CARD_NUMBER = 16;
@@ -25,7 +28,7 @@ interface ICard {
 }
 
 export default function Page() {
-  const { control, watch } = useForm<ICard>({
+  const { handleSubmit, reset, control, watch } = useForm<ICard>({
     defaultValues: {
       cardName: "",
       cardNumber: "",
@@ -34,6 +37,7 @@ export default function Page() {
       cvc: "",
     },
   });
+  const [done, setDone] = useState(false);
 
   const splitCardNumber = (number: string): string => {
     let result = "";
@@ -55,6 +59,15 @@ export default function Page() {
     }
 
     return result;
+  };
+
+  const onSubmit = () => {
+    setDone(true);
+  };
+
+  const onContinue = () => {
+    setDone(false);
+    reset();
   };
 
   const splittedCardNumber = splitCardNumber(watch("cardNumber"));
@@ -81,72 +94,90 @@ export default function Page() {
         />
       </div>
 
-      <form className="mt-8 w-full flex-none px-4 xl:absolute xl:top-1/2 xl:left-1/2 xl:mt-0 xl:ml-24 xl:max-w-md xl:-translate-y-1/2 ">
-        <div className="space-y-4 xl:space-y-6">
-          <Controller
-            name="cardName"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                maxLength={MAX_CARD_NAME}
-                label="Cardholder Name"
-                placeholder="e.g. Jane Appleseed"
-                {...field}
+      <div className="mt-8 w-full px-4 xl:absolute xl:top-1/2 xl:left-1/2 xl:ml-24 xl:mt-0 xl:max-w-md xl:-translate-y-1/2 xl:px-0">
+        {!done ? (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="space-y-4 xl:space-y-6">
+              <Controller
+                name="cardName"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    maxLength={MAX_CARD_NAME}
+                    label="Cardholder Name"
+                    placeholder="e.g. Jane Appleseed"
+                    {...field}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="cardNumber"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                maxLength={MAX_CARD_NUMBER}
-                label="Card Number"
-                placeholder="e.g. 1234 5678 9123 0000"
-                {...field}
+              <Controller
+                name="cardNumber"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    maxLength={MAX_CARD_NUMBER}
+                    label="Card Number"
+                    placeholder="e.g. 1234 5678 9123 0000"
+                    {...field}
+                  />
+                )}
               />
-            )}
-          />
-          <div className="grid grid-cols-2 gap-4 xl:gap-6">
-            <div>
-              <Label>Exp. data (MM/YY)</Label>
-              <div className="grid grid-cols-2 gap-2 xl:gap-3">
+              <div className="grid grid-cols-2 gap-4 xl:gap-6">
+                <div>
+                  <Label>Exp. data (MM/YY)</Label>
+                  <div className="grid grid-cols-2 gap-2 xl:gap-3">
+                    <Controller
+                      name="month"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField maxLength={2} placeholder="MM" {...field} />
+                      )}
+                    />
+                    <Controller
+                      name="year"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField maxLength={2} placeholder="YY" {...field} />
+                      )}
+                    />
+                  </div>
+                </div>
+
                 <Controller
-                  name="month"
+                  name="cvc"
                   control={control}
                   render={({ field }) => (
-                    <TextField maxLength={2} placeholder="MM" {...field} />
-                  )}
-                />
-                <Controller
-                  name="year"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField maxLength={2} placeholder="YY" {...field} />
+                    <TextField
+                      maxLength={MAX_CVC}
+                      label="CVC"
+                      placeholder="e.g. 123"
+                      {...field}
+                    />
                   )}
                 />
               </div>
             </div>
 
-            <Controller
-              name="cvc"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  maxLength={MAX_CVC}
-                  label="CVC"
-                  placeholder="e.g. 123"
-                  {...field}
-                />
-              )}
-            />
-          </div>
-        </div>
+            <Button className="mt-8 xl:mt-12">Confirm</Button>
+          </form>
+        ) : null}
 
-        <button className="mt-8 w-full rounded-lg bg-very-dark-violet p-4 text-xl text-white xl:mt-12">
-          Confirm
-        </button>
-      </form>
+        {/* thank you */}
+        {done ? (
+          <div className="flex flex-col items-center text-center">
+            <Image src={iconComplete} alt="" />
+            <div className="mt-8 text-3xl uppercase tracking-widest text-very-dark-violet">
+              Thank you!
+            </div>
+            <div className="mt-3 text-dark-grayish-violet">
+              We&apos;ve added your credit card details
+            </div>
+            <Button onClick={onContinue} className="mt-12">
+              Continue
+            </Button>
+          </div>
+        ) : null}
+      </div>
     </Container>
   );
 }
