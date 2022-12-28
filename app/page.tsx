@@ -6,6 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import Button from "/app/button";
 import CardFront from "/app/card-front";
 import Container from "/app/container";
+import ErrorMessage from "/app/error-message";
 import ImageSwitch from "/app/image-switch";
 import Label from "/app/label";
 import TextField from "/app/text-field";
@@ -19,6 +20,17 @@ const MAX_CARD_NAME = 21;
 const MAX_CARD_NUMBER = 16;
 const MAX_CVC = 3;
 
+const REQUIRED_ERROR = "Can't be blank";
+const NUMBER_REGEX_ERROR = "Wrong format, numbers only";
+const MONTH_REGEX_ERROR = "Not a valid month";
+const YEAR_REGEX_ERROR = "Not a valid year";
+const CARD_LENGTH_ERROR = "Must be 12 digits";
+const CVC_LENGTH_ERROR = "Must be 3 digits";
+
+const NUMBERS_REGEX = /^[0-9]+$/;
+const MONTH_REGEX = /^(0?[1-9]|1[0-2])$/;
+const YEAR_REGEX = /^\d{2}$/;
+
 interface ICard {
   cardName: string;
   cardNumber: string;
@@ -28,7 +40,14 @@ interface ICard {
 }
 
 export default function Page() {
-  const { handleSubmit, reset, control, watch } = useForm<ICard>({
+  const {
+    handleSubmit,
+    reset,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<ICard>({
+    mode: "onChange",
     defaultValues: {
       cardName: "",
       cardNumber: "",
@@ -78,9 +97,9 @@ export default function Page() {
         {/* background */}
         <ImageSwitch mobileSrc={bgMainMobile} desktopSrc={bgMainDesktop} />
         {/* card back */}
-        <div className="absolute top-5 right-4 w-4/5 drop-shadow-2xl xl:top-auto xl:right-auto xl:bottom-52 xl:ml-64 xl:w-max">
+        <div className="absolute top-5 right-4 w-4/5 drop-shadow-2xl xl:top-auto xl:right-auto xl:bottom-48 xl:ml-64 xl:w-max">
           <Image src={bgCardBack} alt="" priority />
-          <span className="absolute top-16 right-9 mt-2.5 text-xs tracking-widest text-light-grayish-violet xl:top-24 xl:right-14 xl:mt-3 xl:text-base">
+          <span className="absolute top-16 right-9 mt-2.5 text-xs tracking-widest text-white xl:top-24 xl:right-14 xl:mt-3 xl:text-base">
             {watch("cvc") || "000"}
           </span>
         </div>
@@ -90,22 +109,30 @@ export default function Page() {
           number={splittedCardNumber}
           month={watch("month")}
           year={watch("year")}
-          containerClassName="-mt-32 ml-4 inline-block w-4/5 drop-shadow-2xl xl:absolute xl:top-52 xl:mt-0 xl:ml-40 xl:w-auto"
+          containerClassName="-mt-32 ml-4 inline-block w-4/5 drop-shadow-2xl xl:absolute xl:top-48 xl:mt-0 xl:ml-40 xl:w-auto"
         />
       </div>
 
-      <div className="mt-8 w-full px-4 xl:absolute xl:top-1/2 xl:left-1/2 xl:ml-24 xl:mt-0 xl:max-w-md xl:-translate-y-1/2 xl:px-0">
+      <div className="mt-8 w-full px-4 xl:absolute xl:top-1/2 xl:left-1/2 xl:ml-28 xl:mt-0 xl:max-w-md xl:-translate-y-1/2 xl:px-0">
         {!done ? (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-4 xl:space-y-6">
               <Controller
                 name="cardName"
                 control={control}
+                rules={{
+                  required: {
+                    value: true,
+                    message: REQUIRED_ERROR,
+                  },
+                }}
                 render={({ field }) => (
                   <TextField
                     maxLength={MAX_CARD_NAME}
                     label="Cardholder Name"
                     placeholder="e.g. Jane Appleseed"
+                    isError={!!errors.cardName}
+                    errorMessage={errors.cardName?.message}
                     {...field}
                   />
                 )}
@@ -113,11 +140,27 @@ export default function Page() {
               <Controller
                 name="cardNumber"
                 control={control}
-                render={({ field }) => (
+                rules={{
+                  pattern: {
+                    value: NUMBERS_REGEX,
+                    message: NUMBER_REGEX_ERROR,
+                  },
+                  required: {
+                    value: true,
+                    message: REQUIRED_ERROR,
+                  },
+                  minLength: {
+                    value: MAX_CARD_NUMBER,
+                    message: CARD_LENGTH_ERROR,
+                  },
+                }}
+                render={({ field: { ref, ...field } }) => (
                   <TextField
                     maxLength={MAX_CARD_NUMBER}
                     label="Card Number"
                     placeholder="e.g. 1234 5678 9123 0000"
+                    isError={!!errors.cardNumber}
+                    errorMessage={errors.cardNumber?.message}
                     {...field}
                   />
                 )}
@@ -129,28 +172,79 @@ export default function Page() {
                     <Controller
                       name="month"
                       control={control}
+                      rules={{
+                        required: {
+                          value: true,
+                          message: REQUIRED_ERROR,
+                        },
+                        pattern: {
+                          value: MONTH_REGEX,
+                          message: MONTH_REGEX_ERROR,
+                        },
+                      }}
                       render={({ field }) => (
-                        <TextField maxLength={2} placeholder="MM" {...field} />
+                        <TextField
+                          maxLength={2}
+                          isError={!!errors.month}
+                          placeholder="MM"
+                          {...field}
+                        />
                       )}
                     />
                     <Controller
                       name="year"
                       control={control}
+                      rules={{
+                        required: {
+                          value: true,
+                          message: REQUIRED_ERROR,
+                        },
+                        pattern: {
+                          value: YEAR_REGEX,
+                          message: YEAR_REGEX_ERROR,
+                        },
+                      }}
                       render={({ field }) => (
-                        <TextField maxLength={2} placeholder="YY" {...field} />
+                        <TextField
+                          maxLength={2}
+                          isError={!!errors.year}
+                          placeholder="YY"
+                          {...field}
+                        />
                       )}
                     />
                   </div>
+                  {errors.month || errors.year ? (
+                    <ErrorMessage
+                      text={errors.month?.message || errors.year?.message || ""}
+                    />
+                  ) : null}
                 </div>
 
                 <Controller
                   name="cvc"
                   control={control}
+                  rules={{
+                    pattern: {
+                      value: NUMBERS_REGEX,
+                      message: NUMBER_REGEX_ERROR,
+                    },
+                    required: {
+                      value: true,
+                      message: REQUIRED_ERROR,
+                    },
+                    minLength: {
+                      value: 3,
+                      message: CVC_LENGTH_ERROR,
+                    },
+                  }}
                   render={({ field }) => (
                     <TextField
                       maxLength={MAX_CVC}
                       label="CVC"
                       placeholder="e.g. 123"
+                      isError={!!errors.cvc}
+                      errorMessage={errors.cvc?.message}
                       {...field}
                     />
                   )}

@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { InputHTMLAttributes, useId } from "react";
+import ErrorMessage from "/app/error-message";
 import Label from "/app/label";
 
 interface IProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -24,15 +25,16 @@ export default function TextField({
         id={id}
         type="text"
         className={clsx(
-          "w-full rounded-lg border p-3 placeholder-dark-grayish-violet ",
-          { "border-light-grayish-violet": !isError, "border-red": isError },
+          "w-full rounded-lg border p-3 placeholder-dark-grayish-violet outline-linear-gradient-2 focus:outline",
+          {
+            "border-light-grayish-violet outline-1": !isError,
+            "border-red outline-0": isError,
+          },
           className
         )}
         {...props}
       />
-      {errorMessage ? (
-        <span className="text-sm text-red">{errorMessage}</span>
-      ) : null}
+      {isError && errorMessage ? <ErrorMessage text={errorMessage} /> : null}
     </div>
   );
 }

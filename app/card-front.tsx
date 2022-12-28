@@ -26,7 +26,7 @@ export default function CardFront({
         <Image src={cardLogo} alt="" className="w-14 xl:w-20" />
         {/* card number */}
         <div>
-          <div className="mb-3 text-xl tracking-widest xl:mb-6 xl:text-3xl xl:tracking-wider">
+          <div className="mb-3 text-xl tracking-widest xl:mb-4 xl:text-3xl xl:tracking-wider">
             {number || "0000 0000 0000 0000"}
           </div>
           <div className="flex justify-between text-xs xl:text-base">
