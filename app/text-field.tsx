@@ -24,7 +24,7 @@ export default function TextField({
         id={id}
         type="text"
         className={clsx(
-          "w-full rounded-lg border p-3 text-xl placeholder-dark-grayish-violet ",
+          "w-full rounded-lg border p-3 placeholder-dark-grayish-violet ",
           { "border-light-grayish-violet": !isError, "border-red": isError },
           className
         )}

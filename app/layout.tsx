@@ -8,7 +8,7 @@ interface IProps {
 
 export default function Layout({ children }: IProps) {
   return (
-    <html>
+    <html lang="en">
       <head>
         <title>
           Interactive Card Details Form - Frontend Mentor - Tuan Nguyen
