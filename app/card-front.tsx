@@ -18,7 +18,7 @@ export default function CardFront({
   containerClassName,
 }: IProps) {
   return (
-    <div className={"relative inline-block shadow-lg " + containerClassName}>
+    <div className={"relative " + containerClassName}>
       {/* background */}
       <Image src={bgCardFront} alt="" className="w-full" priority />
       {/* body */}
