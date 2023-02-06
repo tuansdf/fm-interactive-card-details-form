@@ -7,6 +7,7 @@ import Button from "/app/button";
 import CardFront from "/app/card-front";
 import Container from "/app/container";
 import ErrorMessage from "/app/error-message";
+import { monoFont } from "/app/fonts";
 import ImageSwitch from "/app/image-switch";
 import Label from "/app/label";
 import TextField from "/app/text-field";
@@ -99,7 +100,12 @@ export default function Page() {
         {/* card back */}
         <div className="absolute top-5 right-4 w-4/5 drop-shadow-2xl xl:top-auto xl:right-auto xl:bottom-48 xl:ml-64 xl:w-max">
           <Image src={bgCardBack} alt="" priority />
-          <span className="absolute top-16 right-9 mt-2.5 text-xs tracking-widest text-white xl:top-24 xl:right-14 xl:mt-3 xl:text-base">
+          <span
+            className={
+              monoFont.className +
+              " absolute top-16 right-9 mt-2.5 text-xs tracking-widest text-white xl:top-24 xl:right-14 xl:mt-3 xl:text-base"
+            }
+          >
             {watch("cvc") || "000"}
           </span>
         </div>

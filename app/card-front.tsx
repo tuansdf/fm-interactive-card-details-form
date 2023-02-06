@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { monoFont } from "/app/fonts";
 import bgCardFront from "/public/bg-card-front.png";
 import cardLogo from "/public/card-logo.svg";
 
@@ -22,11 +23,16 @@ export default function CardFront({
       {/* background */}
       <Image src={bgCardFront} alt="" className="w-full" priority />
       {/* body */}
-      <div className="absolute inset-0 flex flex-col justify-between p-5 text-white xl:p-8">
+      <div
+        className={
+          monoFont.className +
+          " absolute inset-0 flex flex-col justify-between p-5 text-white xl:p-8"
+        }
+      >
         <Image src={cardLogo} alt="" className="w-14 xl:w-20" />
         {/* card number */}
         <div>
-          <div className="mb-3 text-xl tracking-widest xl:mb-4 xl:text-3xl xl:tracking-wider">
+          <div className=" mb-3 text-[1.1875rem] tracking-widest xl:mb-4 xl:text-3xl xl:tracking-wider">
             {number || "0000 0000 0000 0000"}
           </div>
           <div className="flex justify-between text-xs xl:text-base">
